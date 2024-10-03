@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      # Use PostgreSQL connection string
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/curriculo_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      SPRING_PROFILES_ACTIVE: dev
+
+  postgres:
+    image: postgres:13
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: curriculo_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com   # Email para login no pgAdmin
+      PGADMIN_DEFAULT_PASSWORD: admin            # Senha para login no pgAdmin
+    ports:
+      - "5050:80"  # Porta local para acessar a UI do pgAdmin
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
